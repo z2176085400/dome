@@ -157,11 +157,17 @@ public class MessageServiceImpl implements MessageService {
         msgReceiveMapper.insert(receive);
     }
 /*邮箱验证时加密不同*/
+    /*
+    * @param data url连接的key ，email 接收邮箱地址，老邢对邮箱进行加密了。我解加密不了，故没加密
+    *
+    * */
     @Override
     public ResponseMapper checkEmail(String data,String email) {
-
+/*
+* 获取URL连接是否被点击过
+* */
         String key = ProjectConfig.EMAILCODE+ email;
-
+            //设置连接失效，即点击后失效
         if (jedisUtil.exists(key)){
             String vcode = jedisUtil.get(key);
 
@@ -170,11 +176,14 @@ public class MessageServiceImpl implements MessageService {
             }
 
             if (vcode != null){
+                //把rides中的验证码拿出来进行加密，和传过来的data值进行比较
                 if(EncryptionUtil.AESEnc(ProjectConfig.AESKEYACTIVECODE,vcode).equals(data)) {
                    String s= EncryptionUtil.AESEnc(ProjectConfig.AESKEYACTIVECODE,vcode);
+                   //设置连接失效
                     jedisUtil.setnx(ProjectConfig.EMAILUSE+vcode,vcode);
                     return ResponseMapper.setOK("验证码正确", s);
                 }else {
+                    //设置连接失效
                     jedisUtil.setnx(ProjectConfig.EMAILUSE+vcode,vcode);
                     return ResponseMapper.setERROR("验证码错误，重新输入");
                 }
