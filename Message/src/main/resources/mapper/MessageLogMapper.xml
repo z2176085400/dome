@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkz.message.core.dao.MessageLogMapper">
+  <resultMap id="BaseResultMap" type="com.zkz.message.core.entity.MessageLog">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="mid" property="mid" />
+    <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="info" jdbcType="VARCHAR" property="info" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, mid, createtime, ip, info
+  </sql>
+
+  <select id="selectByPage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from messagelog
+    limit #{index},#{count}
+    order by createtime desc
+  </select>
+  <insert id="insert" parameterType="com.zkz.message.core.entity.MessageLog">
+    insert into messagelog ( mid, createtime,
+      ip, info)
+    values (#{mid}, now(),
+      #{ip,jdbcType=VARCHAR}, #{info,jdbcType=VARCHAR})
+  </insert>
+  <select id="selectCount">
+    select count(*) from messagelog
+  </select>
+
+</mapper>
